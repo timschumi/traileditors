@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import math
 import sys
 import struct
 import PIL.Image
@@ -24,10 +25,6 @@ info_len_px = image.getpixel((image.width - 1, 0))
 info_len_bytes = bytes(info_len_px)
 info_len = struct.unpack(">I", info_len_bytes)[0]
 
-# Not sure why this is needed, but otherwise the lz4 data starts at offset 1
-# instead of offset 0
-info_len += 1
-
 print(f"[*] Length of SaveGameInPNGInfo object: {hex(info_len)} ({info_len})")
 
 info = b"".join([get_byte(i) for i in range(info_len)])
@@ -36,7 +33,11 @@ f = open(sys.argv[1] + ".info.bin", 'wb')
 f.write(info)
 f.close()
 
-data = b"".join([get_byte(info_len + i) for i in range(0x634)])
+# The encoder stops writing data after the end of the SaveGameInPNGInfo struct
+# and will only continue writing the remaining data when the next pixel starts.
+data_offset = int(math.ceil(info_len / 3)) * 3
+
+data = b"".join([get_byte(data_offset + i) for i in range(0x634)])
 
 f = open(sys.argv[1] + ".data.bin", 'wb')
 f.write(data)
