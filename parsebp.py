@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from lib import dotnet
+import io
 import math
 import sys
 import struct
@@ -28,17 +30,39 @@ info_len = struct.unpack(">I", info_len_bytes)[0]
 print(f"[*] Length of SaveGameInPNGInfo object: {hex(info_len)} ({info_len})")
 
 info = b"".join([get_byte(i) for i in range(info_len)])
+parsed_info = dotnet.SerializedMessage(io.BytesIO(info))
 
-f = open(sys.argv[1] + ".info.bin", 'wb')
-f.write(info)
-f.close()
+save_game_info = parsed_info.object
+
+print(f"[*] SaveGameInPNGInfo dump:")
+print(f"     - version: {save_game_info.version}")
+print(f"     - creator: \"{save_game_info.creator}\"")
+print(f"     - structureByteSize: {save_game_info.structureByteSize}")
+print(f"     - structureIdentifierSize: {save_game_info.structureIdentifierSize}")
+print(f"     - structureMetaByteSize: {save_game_info.structureMetaByteSize}")
 
 # The encoder stops writing data after the end of the SaveGameInPNGInfo struct
 # and will only continue writing the remaining data when the next pixel starts.
 data_offset = int(math.ceil(info_len / 3)) * 3
 
-data = b"".join([get_byte(data_offset + i) for i in range(0x634)])
+data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structureByteSize)])
 
-f = open(sys.argv[1] + ".data.bin", 'wb')
+f = open(sys.argv[1] + ".structure.bin", 'wb')
+f.write(data)
+f.close()
+
+data_offset += save_game_info.structureByteSize
+
+data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structureIdentifierSize)])
+
+f = open(sys.argv[1] + ".ident.bin", 'wb')
+f.write(data)
+f.close()
+
+data_offset += save_game_info.structureIdentifierSize
+
+data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structureMetaByteSize)])
+
+f = open(sys.argv[1] + ".meta.bin", 'wb')
 f.write(data)
 f.close()
