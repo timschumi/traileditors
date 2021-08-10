@@ -2,6 +2,7 @@
 
 from lib import dotnet
 import io
+import lz4.frame
 import math
 import sys
 import struct
@@ -46,6 +47,8 @@ print(f"     - structureMetaByteSize: {save_game_info.structureMetaByteSize}")
 data_offset = int(math.ceil(info_len / 3)) * 3
 
 data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structureByteSize)])
+
+data = lz4.frame.decompress(data)
 
 f = open(sys.argv[1] + ".structure.bin", 'wb')
 f.write(data)
