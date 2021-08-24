@@ -18,17 +18,21 @@ __all__ = [
     'SerializedMessage',
 ]
 
+
 def _read_enum(stream):
     data = stream.read(1)
     return struct.unpack("b", data)[0]
+
 
 def _read_int32(stream):
     data = stream.read(4)
     return struct.unpack("<i", data)[0]
 
+
 def _read_uint32(stream):
     data = stream.read(4)
     return struct.unpack("<I", data)[0]
+
 
 def _read_lpstr(stream):
     str_len = 0
@@ -45,6 +49,7 @@ def _read_lpstr(stream):
 
 class ParseException(Exception):
     pass
+
 
 class RecordTypeEnumeration(Enum):
     SerializedStreamHeader = 0
@@ -67,6 +72,7 @@ class RecordTypeEnumeration(Enum):
     ArraySingleString = 17
     MethodCall = 21
     MethodReturn = 22
+
 
 class BinaryTypeEnumeration(Enum):
     Primitive = 0
@@ -93,6 +99,7 @@ class BinaryTypeEnumeration(Enum):
 
         return False
 
+
 class PrimitiveTypeEnumeration(Enum):
     Boolean = 1
     Byte = 2
@@ -112,6 +119,7 @@ class PrimitiveTypeEnumeration(Enum):
     Null = 17
     String = 18
 
+
 class ClassInfo:
     def __init__(self, stream):
         self.ObjectId = _read_int32(stream)
@@ -123,7 +131,9 @@ class ClassInfo:
             self.MemberNames.append(_read_lpstr(stream))
 
     def __str__(self):
-        return f"<ClassInfo: ObjectId={self.ObjectId}, Name='{self.Name}', MemberCount={self.MemberCount}, MemberNames={self.MemberNames}>"
+        return f"<ClassInfo: ObjectId={self.ObjectId}, Name='{self.Name}', " \
+               f"MemberCount={self.MemberCount}, MemberNames={self.MemberNames}>"
+
 
 class ClassTypeInfo:
     def __init__(self, stream):
@@ -132,6 +142,7 @@ class ClassTypeInfo:
 
     def __str__(self):
         return f"<ClassTypeInfo: TypeName={self.TypeName}, LibraryId={self.LibraryId}>"
+
 
 class MemberTypeInfo:
     def __init__(self, stream, count):
@@ -152,7 +163,6 @@ class MemberTypeInfo:
 
             if t == BinaryTypeEnumeration.SystemClass:
                 raise NotImplementedError("SystemClass in MemberTypeInfo not supported (yet)")
-                continue
 
             if t == BinaryTypeEnumeration.Class:
                 self.AdditionalInfos.append(ClassTypeInfo(stream))
@@ -172,7 +182,8 @@ class Record:
             self.RecordTypeEnum = RecordTypeEnumeration(_read_enum(stream))
 
         if self.RecordTypeEnum != self._expected_type_enum():
-            raise ParseException(f"{self.RecordTypeEnum} did not match the expected value of {self._expected_type_enum()}")
+            raise ParseException(f"{self.RecordTypeEnum} did not match"
+                                 f"the expected value of {self._expected_type_enum()}")
 
     def _expected_type_enum(self):
         raise NotImplementedError("_expected_type_enum is not implemented!")
@@ -201,6 +212,7 @@ class Record:
 
         raise ParseException(f"Unknown record type: {record_type}")
 
+
 class BinaryObjectString(Record):
     def __init__(self, stream, **kwargs):
         super().__init__(stream, **kwargs)
@@ -212,6 +224,7 @@ class BinaryObjectString(Record):
 
     def __str__(self):
         return f"<BinaryObjectString: ObjectId={self.ObjectId}, Value='{self.Value}'>"
+
 
 class SerializationHeaderRecord(Record):
     def __init__(self, stream, **kwargs):
@@ -225,7 +238,9 @@ class SerializationHeaderRecord(Record):
         return RecordTypeEnumeration.SerializedStreamHeader
 
     def __str__(self):
-        return f"<SerializationHeaderRecord: RootId={self.RootId}, HeaderId={self.HeaderId}, MajorVersion={self.MajorVersion}, MinorVersion={self.MinorVersion}>"
+        return f"<SerializationHeaderRecord: RootId={self.RootId}, HeaderId={self.HeaderId}, " \
+               f"MajorVersion={self.MajorVersion}, MinorVersion={self.MinorVersion}>"
+
 
 class ClassWithId(Record):
     def __init__(self, stream, **kwargs):
@@ -239,6 +254,7 @@ class ClassWithId(Record):
     def __str__(self):
         return f"<ClassWithId: ObjectId={self.ObjectId}, MetadataId={self.MetadataId}>"
 
+
 class ClassWithMembersAndTypes(Record):
     def __init__(self, stream, **kwargs):
         super().__init__(stream, **kwargs)
@@ -250,7 +266,8 @@ class ClassWithMembersAndTypes(Record):
         return RecordTypeEnumeration.ClassWithMembersAndTypes
 
     def __str__(self):
-        return f"<ClassWithMembersAndTypes: ClassInfo={self.ClassInfo}, MemberTypeInfo={self.MemberTypeInfo}, LibraryId={self.LibraryId}>"
+        return f"<ClassWithMembersAndTypes: ClassInfo={self.ClassInfo}, " \
+               f"MemberTypeInfo={self.MemberTypeInfo}, LibraryId={self.LibraryId}>"
 
     def to_object(self, stream, ids):
         cls = type(self.ClassInfo.Name, (), {'__doc__': '.NET class'})
@@ -289,9 +306,11 @@ class ClassWithMembersAndTypes(Record):
 
         return obj
 
+
 class MessageEnd(Record):
     def _expected_type_enum(self):
         return RecordTypeEnumeration.MessageEnd
+
 
 class BinaryLibrary(Record):
     def __init__(self, stream, **kwargs):
@@ -304,6 +323,7 @@ class BinaryLibrary(Record):
 
     def __str__(self):
         return f"<BinaryLibrary: LibraryId={self.LibraryId}, LibraryName='{self.LibraryName}'>"
+
 
 class SerializedMessage:
     def __init__(self, stream):
