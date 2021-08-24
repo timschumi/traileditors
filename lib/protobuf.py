@@ -6,10 +6,10 @@ __all__ = [
 
 
 class ProtoType(Enum):
-    InputSeatBlockSetup = 9
-    SliderBlockSetup = 9
-    ToneBlockSetup = 9
-    VisitedStateMap = 41
+    InputSeatBlockSetup = 0
+    SliderBlockSetup = 1
+    ToneBlockSetup = 2
+    VisitedStateMap = 3
     Vector3 = 4
     Quaternion = 5
     Bounds = 6
