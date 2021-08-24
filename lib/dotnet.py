@@ -285,16 +285,16 @@ class ClassWithMembersAndTypes(Record):
                 additional_info = self.MemberTypeInfo.AdditionalInfos[add]
                 add += 1
 
-            if t == BinaryTypeEnumeration.Primitive:
-                if additional_info == PrimitiveTypeEnumeration.Int32:
-                    setattr(obj, attr_name, _read_int32(stream))
-                    continue
+                if t == BinaryTypeEnumeration.Primitive:
+                    if additional_info == PrimitiveTypeEnumeration.Int32:
+                        setattr(obj, attr_name, _read_int32(stream))
+                        continue
 
-                if additional_info == PrimitiveTypeEnumeration.UInt32:
-                    setattr(obj, attr_name, _read_uint32(stream))
-                    continue
+                    if additional_info == PrimitiveTypeEnumeration.UInt32:
+                        setattr(obj, attr_name, _read_uint32(stream))
+                        continue
 
-                raise NotImplementedError(f"Primitive Type {additional_info}")
+                    raise NotImplementedError(f"Primitive Type {additional_info}")
 
             if t == BinaryTypeEnumeration.String:
                 record = BinaryObjectString(stream)
