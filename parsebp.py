@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from lib import dotnet, trailmakers_pb2
+from lib import dotnet, trailmakers_pb2, smaz
 from google.protobuf import text_format
 import io
 import lz4.frame
@@ -68,6 +68,12 @@ print(text_format.MessageToString(structure_ident, indent=4))
 data_offset += save_game_info.structureIdentifierSize
 
 data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structureMetaByteSize)])
+
+f = open(sys.argv[1] + ".meta.smaz.bin", 'wb')
+f.write(data)
+f.close()
+
+data = smaz.decompress(data)
 
 f = open(sys.argv[1] + ".meta.bin", 'wb')
 f.write(data)
