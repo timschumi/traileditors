@@ -69,12 +69,9 @@ data_offset += save_game_info.structureIdentifierSize
 
 data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structureMetaByteSize)])
 
-f = open(sys.argv[1] + ".meta.smaz.bin", 'wb')
-f.write(data)
-f.close()
-
 data = smaz.decompress(data)
 
-f = open(sys.argv[1] + ".meta.bin", 'wb')
-f.write(data)
-f.close()
+structure_meta = trailmakers_pb2.StructureMetaDataProto()
+structure_meta.ParseFromString(data)
+print(f"[*] StructureMetaDataProto dump:")
+print(text_format.MessageToString(structure_meta, indent=4))
