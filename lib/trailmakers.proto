@@ -137,8 +137,8 @@ message TransformationLinksProto {
 }
 
 message Guid {
-    uint64 low = 1;
-    uint64 high = 2;
+    fixed64 low = 1;
+    fixed64 high = 2;
 }
 
 message StructureNodeSaveData {
