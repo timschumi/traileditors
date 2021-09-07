@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from lib import dotnet, trailmakers_pb2
+from google.protobuf import text_format
 import io
 import lz4.frame
 import math
@@ -53,7 +54,7 @@ data = lz4.frame.decompress(data)
 structure = trailmakers_pb2.StructureGraphSaveDataProto()
 structure.ParseFromString(data)
 print(f"[*] StructureGraphSaveDataProto dump:")
-print(f"{structure}")
+print(text_format.MessageToString(structure, indent=4))
 
 data_offset += save_game_info.structureByteSize
 
