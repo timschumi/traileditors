@@ -39,7 +39,7 @@ def decompress(inputs):
 
         if inputs[i] == 255:
             output += inputs[i + 2:i + 2 + inputs[i + 1]]
-            i += inputs[i + 1] + 1
+            i += inputs[i + 1] + 1 + 1
             continue
 
         output += DECODE[inputs[i]]
