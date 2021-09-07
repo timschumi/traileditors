@@ -746,6 +746,7 @@ message NuggetHuntSystemSaveData {
 
 message SalvagePlayerSystemSaveData {
     repeated string m_detectedIds = 1;
+    repeated string m_scannedIds = 2;
 }
 
 enum EIdentifierType {
