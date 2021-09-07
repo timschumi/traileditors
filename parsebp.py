@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from lib import dotnet
+from lib import dotnet, trailmakers_pb2
 import io
 import lz4.frame
 import math
@@ -50,9 +50,10 @@ data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structu
 
 data = lz4.frame.decompress(data)
 
-f = open(sys.argv[1] + ".structure.bin", 'wb')
-f.write(data)
-f.close()
+structure = trailmakers_pb2.StructureGraphSaveDataProto()
+structure.ParseFromString(data)
+print(f"[*] StructureGraphSaveDataProto dump:")
+print(f"{structure}")
 
 data_offset += save_game_info.structureByteSize
 
