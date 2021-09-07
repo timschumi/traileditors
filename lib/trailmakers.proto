@@ -135,6 +135,11 @@ message TransformationLinksProto {
     repeated StructureSaveIdentifierProto Links = 1;
 }
 
+message Guid {
+    uint64 low = 1;
+    uint64 high = 2;
+}
+
 message StructureNodeSaveData {
     ABuildGridPosition SocketPosition = 1;
     ABuildGridRotation SocketRotation = 2;
@@ -142,7 +147,7 @@ message StructureNodeSaveData {
     int32 parentSocket = 4;
     int32 StructureIndex = 5;
     BlockBehaviourSetup BlockSetup = 6;
-    reserved 7;  // TODO: Guid BlockMetadataGuid
+    Guid BlockMetadataGuid = 7;
     reserved 8;
     int32 CloneNodeID = 9;
 }
