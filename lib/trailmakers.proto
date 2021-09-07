@@ -84,7 +84,7 @@ message GhostData {
     repeated SerializableVector3 posPerTimeUnit = 1;
     repeated SerializableVector3 rotPerTimeUnit = 2;
     repeated float timeStampPerTimeUnit = 3;
-    reserved 4;  // TODO: array StructureSaveData
+    bytes StructureSaveData = 4;
     float timeScale = 5;
     float raceTime = 6;
     int32 lastIndex = 7;
@@ -109,12 +109,13 @@ message TrailmakersPlayerSaveData {
     ShroudSystemSaveData m_shroudData = 6;
     UnlockingPlayerSystemSaveData m_unlockingData = 7;
     SecretSystemSaveData m_secretData = 8;
-    reserved 10;  // TODO: array m_latestStructureData
+    reserved 9;
+    bytes m_latestStructureData = 10;
     StatisticsPlayerSystemSaveData m_statisticsData = 11;
     TreasureHuntSystemSaveData m_treasureHuntData = 12;
     NuggetHuntSystemSaveData m_nuggetHuntData = 13;
     SalvagePlayerSystemSaveData m_salvageData = 14;
-    reserved 15;  // TODO: array latestStructureIdentifierBytes
+    bytes m_latestStructureIdentifierBytes = 15;
 }
 
 message StructureSaveIdentifierProto {
