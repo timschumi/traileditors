@@ -10,7 +10,7 @@ message SliderBlockSetup {
     float sliderValue2 = 2;
     float sliderValue3 = 3;
     float sliderValue4 = 4;
-    reserved 5;  // TODO: ToneBlockSetup handling
+    ToneBlockSetup ToneBlockSetup = 5;
 }
 
 message ToneBlockSetup {
@@ -63,10 +63,10 @@ message StructureGraphSaveDataProto {
 message BlockBehaviourSetup {
     repeated SocketLinkHandleDescription LinkHandlePositiveList = 1;
     repeated SocketLinkHandleDescription LinkHandleNegativeList = 2;
-    reserved 3;  // TODO: InputSeatBlockSetup handling
+    InputSeatBlockSetup InputSeatBlockSetup = 3;
     SerializableColor primaryColor = 4;
     SerializableColor secondaryColor = 5;
-    reserved 6;  // TODO: SliderBlockSetup handling
+    SliderBlockSetup SliderBlockSetup = 6;
     float DelayTime = 7;
     float ActiveTime = 8;
     bool TogglePositive = 9;
@@ -719,7 +719,7 @@ message CheckpointSystemSaveData {
 }
 
 message ShroudSystemSaveData {
-    reserved 1;  // TODO: VisitedStateMap (CellMap) VistedMap
+    CellMap VisitedMap = 1;
 }
 
 message UnlockingPlayerSystemSaveData {
@@ -778,7 +778,7 @@ message CellMap {
     int32 width = 1;
     int32 height = 2;
     Rect bounds = 3;
-    reserved 4;  // TODO: VisitedStateMap handling
+    VisitedStateMap VisitedStateMap = 4;
 }
 
 message SimpleBitArray {
