@@ -51,18 +51,19 @@ data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structu
 
 data = lz4.frame.decompress(data)
 
-structure = trailmakers_pb2.StructureGraphSaveDataProto()
-structure.ParseFromString(data)
+structure_graph = trailmakers_pb2.StructureGraphSaveDataProto()
+structure_graph.ParseFromString(data)
 print(f"[*] StructureGraphSaveDataProto dump:")
-print(text_format.MessageToString(structure, indent=4))
+print(text_format.MessageToString(structure_graph, indent=4))
 
 data_offset += save_game_info.structureByteSize
 
 data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structureIdentifierSize)])
 
-f = open(sys.argv[1] + ".ident.bin", 'wb')
-f.write(data)
-f.close()
+structure_ident = trailmakers_pb2.StructureSaveIdentifierProto()
+structure_ident.ParseFromString(data)
+print(f"[*] StructureSaveIdentifierProto dump:")
+print(text_format.MessageToString(structure_ident, indent=4))
 
 data_offset += save_game_info.structureIdentifierSize
 
