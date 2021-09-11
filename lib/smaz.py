@@ -2,6 +2,7 @@ import io
 
 __all__ = [
     'decompress',
+    'compress',
 ]
 
 DECODE = [b" ", b"the", b"e", b"t", b"a", b"of", b"o", b"and", b"i", b"n", b"s", b"e ", b"r", b" th",
@@ -26,6 +27,8 @@ DECODE = [b" ", b"the", b"e", b"t", b"a", b"of", b"o", b"and", b"i", b"n", b"s",
           b" we", b"ly", b"ee", b" n", b"id", b" cl", b"ac", b"il", b"</", b"rt", b" wi", b"div",
           b"e, b", b" it", b"whi", b" ma", b"ge", b"x", b"e c", b"men", b".com"]
 
+LEN_DECODE = sorted(enumerate(DECODE), key=lambda x: len(x[1]), reverse=True)
+
 def decompress(stream: io.IOBase):
     output = b""
     i = 0
@@ -46,3 +49,36 @@ def decompress(stream: io.IOBase):
         output += DECODE[nextbyte[0]]
 
     return output
+
+def _compress_raw(data):
+    return bytes([0xff, len(data)]) + data
+
+def compress(data):
+    chunks = []
+    buf = b""
+
+    while len(data) > 0:
+        if len(buf) >= 255:
+            chunks += [_compress_raw(buf)]
+            buf = b""
+
+        try:
+            e = next(filter(lambda x: data.startswith(x[1]), LEN_DECODE))
+
+            if len(buf) > 0:
+                chunks += [_compress_raw(buf)]
+                buf = b""
+
+            chunks += [bytes([e[0]])]
+            data = data[len(e[1]):]
+        except StopIteration:
+            buf += bytes([data[0]])
+            data = data[1:]
+
+    if len(buf) > 0:
+        chunks += [_compress_raw(buf)]
+
+    # Replace one-byte multibyte sequences
+    chunks = [(b"\xfe" + ch[2:] if ch.startswith(b"\xff\x01") else ch) for ch in chunks]
+
+    return b"".join(chunks)
