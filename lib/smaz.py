@@ -1,3 +1,5 @@
+import io
+
 __all__ = [
     'decompress',
 ]
@@ -24,25 +26,23 @@ DECODE = [b" ", b"the", b"e", b"t", b"a", b"of", b"o", b"and", b"i", b"n", b"s",
           b" we", b"ly", b"ee", b" n", b"id", b" cl", b"ac", b"il", b"</", b"rt", b" wi", b"div",
           b"e, b", b" it", b"whi", b" ma", b"ge", b"x", b"e c", b"men", b".com"]
 
-def decompress(inputs):
+def decompress(stream: io.IOBase):
     output = b""
     i = 0
 
-    while True:
-        if i >= len(inputs):
-            break
-
-        if inputs[i] == 254:
-            output += inputs[i + 1:i + 2]
-            i += 2
+    while nextbyte := stream.read(1):
+        # Single byte
+        if nextbyte[0] == 0xfe:
+            output += stream.read(1)
             continue
 
-        if inputs[i] == 255:
-            output += inputs[i + 2:i + 2 + inputs[i + 1]]
-            i += inputs[i + 1] + 1 + 1
+        # Multiple bytes
+        if nextbyte[0] == 0xff:
+            length = stream.read(1)
+            output += stream.read(length[0])
             continue
 
-        output += DECODE[inputs[i]]
-        i += 1
+        # Dictionary word
+        output += DECODE[nextbyte[0]]
 
     return output
