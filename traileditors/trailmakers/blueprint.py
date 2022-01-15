@@ -3,9 +3,9 @@ import lz4.frame
 import math
 import PIL.Image
 import struct
-from traileditors.compressor import smaz
-from traileditors.parser import dotnet
-from traileditors import trailmakers
+from ..compressor import smaz
+from ..parser import dotnet
+from .. import trailmakers
 
 __all__ = [
     'Blueprint',
