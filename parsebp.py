@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
-from lib import dotnet, trailmakers_pb2, smaz
+from traileditors.compressor import smaz
+from traileditors.parser import dotnet
+from traileditors import trailmakers
 from google.protobuf import text_format
 import io
 import lz4.frame
@@ -10,6 +12,7 @@ import struct
 import PIL.Image
 
 image = PIL.Image.open(sys.argv[1])
+
 
 # Data is stored at the very end of the image (left to right and bottom to top).
 # The values are encoded in the RGB values of that pixel.
@@ -22,6 +25,7 @@ def get_byte(n):
     px = image.getpixel((x, y))
 
     return px[n % 3].to_bytes(1, byteorder='big')
+
 
 # Get the top right pixel.
 # This contains the length of the serialized SaveGameInPNGInfo object.
@@ -51,7 +55,7 @@ data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structu
 
 data = lz4.frame.decompress(data)
 
-structure_graph = trailmakers_pb2.StructureGraphSaveDataProto()
+structure_graph = trailmakers.protobuf.StructureGraphSaveDataProto()
 structure_graph.ParseFromString(data)
 print(f"[*] StructureGraphSaveDataProto dump:")
 print(text_format.MessageToString(structure_graph, indent=4))
@@ -60,7 +64,7 @@ data_offset += save_game_info.structureByteSize
 
 data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structureIdentifierSize)])
 
-structure_ident = trailmakers_pb2.StructureSaveIdentifierProto()
+structure_ident = trailmakers.protobuf.StructureSaveIdentifierProto()
 structure_ident.ParseFromString(data)
 print(f"[*] StructureSaveIdentifierProto dump:")
 print(text_format.MessageToString(structure_ident, indent=4))
@@ -71,7 +75,7 @@ data = b"".join([get_byte(data_offset + i) for i in range(save_game_info.structu
 
 data = smaz.decompress(io.BytesIO(data))
 
-structure_meta = trailmakers_pb2.StructureMetaDataProto()
+structure_meta = trailmakers.protobuf.StructureMetaDataProto()
 structure_meta.ParseFromString(data)
 print(f"[*] StructureMetaDataProto dump:")
 print(text_format.MessageToString(structure_meta, indent=4))

@@ -29,6 +29,7 @@ DECODE = [b" ", b"the", b"e", b"t", b"a", b"of", b"o", b"and", b"i", b"n", b"s",
 
 LEN_DECODE = sorted(enumerate(DECODE), key=lambda x: len(x[1]), reverse=True)
 
+
 def decompress(stream: io.IOBase):
     output = b""
     i = 0
@@ -50,8 +51,10 @@ def decompress(stream: io.IOBase):
 
     return output
 
+
 def _compress_raw(data):
     return bytes([0xff, len(data)]) + data
+
 
 def compress(data):
     chunks = []
